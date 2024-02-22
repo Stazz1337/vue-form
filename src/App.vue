@@ -35,6 +35,13 @@ function onFileInput(e) {
 function submitForm() {
   console.log(form.value);
   showForm.value = false;
+  form.value = {
+      name: '',
+      phone: '',
+      email: '',
+      file: null,
+      consent: false,
+    };
   message.value = 'Отзыв записан в консоль';
   setTimeout(() => (message.value = ''), 2000);
 }
@@ -159,8 +166,8 @@ function submitForm() {
   color: gray;
   font-size: 40px;
   position: absolute;
-  top: 0px;
-  right: 10px;
+  top: -3px;
+  right: 5px;
 }
 .close:hover {
   color: black;
@@ -171,6 +178,7 @@ function submitForm() {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  
 }
 
 .consent {
