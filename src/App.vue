@@ -23,10 +23,21 @@ const isFormValid = computed(() => {
 
 function onFileInput(e) {
   const file = e.target.files[0];
+
   if (file.size > 2097152) {
     alert('Допустимый размер файла не более 2 МБ');
+    form.value.file = null;
+    e.target.value = '';
     return;
   }
+
+  if (!file.type.includes('image') && !file.type.includes('application/pdf')) {
+    alert('Пожалуйста, выберите изображение или pdf-файл');
+    form.value.file = null;
+    e.target.value = '';
+    return;
+  }
+
   form.value.file = file;
 }
 
@@ -36,12 +47,12 @@ function submitForm() {
   console.log(form.value);
   showForm.value = false;
   form.value = {
-      name: '',
-      phone: '',
-      email: '',
-      file: null,
-      consent: false,
-    };
+    name: '',
+    phone: '',
+    email: '',
+    file: null,
+    consent: false,
+  };
   message.value = 'Отзыв записан в консоль';
   setTimeout(() => (message.value = ''), 2000);
 }
@@ -178,7 +189,6 @@ function submitForm() {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  
 }
 
 .consent {
