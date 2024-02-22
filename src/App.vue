@@ -52,7 +52,7 @@ function submitForm() {
     <button class="button" @click="showForm = true">Оставить отзыв</button>
     <p class="message" v-if="message">{{ message }}</p>
 
-    <div v-if="showForm" class="modal">
+    <div v-if="showForm" class="modal" @click.self="showForm = false">
       <div class="content">
         <span class="close" @click="showForm = false">&times;</span>
         <form class="form" @submit.prevent="submitForm">
