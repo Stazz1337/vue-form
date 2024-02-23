@@ -1,12 +1,26 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { vMaska } from 'maska';
+import * as yup from 'yup';
+import { Form, Field, ErrorMessage } from 'vee-validate';
+
+const schema = yup.object({
+  name: yup.string().required('Это поле обязательно').min(3, 'Слишком короткое имя'),
+  email: yup
+    .string()
+    .required('Это поле обязательно')
+    .email('Некорректный адрес электронной почты'),
+  phone: yup.string().required('Это поле обязательно').min('18', 'Некорректный номер телефона'),
+  file: yup.mixed().required('Файл обязателен'),
+  consent: yup.bool().required('Согласие обязательно'),
+});
 
 const form = ref({
   name: '',
   phone: '',
   email: '',
   file: null,
-  consent: false,
+  consent: null,
 });
 
 const showForm = ref(false);
@@ -38,6 +52,12 @@ function onFileInput(e) {
     return;
   }
 
+  if (!file) {
+    form.value.file = null;
+    e.target.value = '';
+    return;
+  }
+
   form.value.file = file;
 }
 
@@ -54,7 +74,13 @@ function submitForm() {
     consent: false,
   };
   message.value = 'Отзыв записан в консоль';
-  setTimeout(() => (message.value = ''), 2000);
+  setTimeout(() => (message.value = ''), 3000);
+}
+
+// проверка ошибок во всех полях
+
+function hasErrors(errors) {
+  return Object.keys(errors).length > 0;
 }
 </script>
 
@@ -66,10 +92,10 @@ function submitForm() {
     <div v-if="showForm" class="modal" @click.self="showForm = false">
       <div class="content">
         <span class="close" @click="showForm = false">&times;</span>
-        <form class="form" @submit.prevent="submitForm">
-          <h2>Оставьте отзыв</h2>
+        <Form class="form" @submit="submitForm" :validation-schema="schema" v-slot="{ errors }">
+          <h2 class="title">Оставьте отзыв</h2>
 
-          <input
+          <Field
             type="text"
             id="name"
             name="name"
@@ -77,15 +103,21 @@ function submitForm() {
             placeholder="Ваше имя"
             required />
 
-          <input
+          <span class="error-span"><ErrorMessage name="name" class="error" /></span>
+
+          <Field
             type="tel"
             id="phone"
             name="phone"
             v-model="form.phone"
             placeholder="Ваш номер телефона"
-            required />
+            required
+            v-maska
+            data-maska="+7 (###) ###-##-##" />
 
-          <input
+          <span class="error-span"><ErrorMessage name="phone" class="error" /></span>
+
+          <Field
             type="email"
             id="email"
             name="email"
@@ -93,7 +125,9 @@ function submitForm() {
             placeholder="Ваш email"
             required />
 
-          <input
+          <span class="error-span"><ErrorMessage name="email" class="error" /></span>
+
+          <Field
             type="file"
             id="file"
             name="file"
@@ -102,25 +136,29 @@ function submitForm() {
             placeholder="Прикрепить файл"
             required />
 
+          <span class="error-span"><ErrorMessage name="file" class="error" /></span>
+
           <div>
-            <input
+            <Field
               class="consent"
               type="checkbox"
               id="consent"
               name="consent"
               v-model="form.consent"
+              :value="true"
               required />
             <label for="consent">Согласие на обработку персональных данных</label>
           </div>
+          <span class="error-span"><ErrorMessage name="consent" class="error" /></span>
 
           <button
             class="button"
             type="submit"
-            :disabled="!isFormValid"
-            :class="{ disabled: !isFormValid }">
+            :disabled="!isFormValid || hasErrors(errors)"
+            :class="{ disabled: !isFormValid || hasErrors(errors) }">
             Отправить
           </button>
-        </form>
+        </Form>
       </div>
     </div>
   </main>
@@ -188,7 +226,10 @@ function submitForm() {
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+}
+
+.title {
+  margin-bottom: 15px;
 }
 
 .consent {
@@ -200,5 +241,14 @@ function submitForm() {
   color: green;
   margin: 10px auto 0;
   text-align: center;
+}
+
+.error-span {
+  min-height: 18px;
+}
+.error {
+  color: red;
+  font-size: 12px;
+  line-height: 16px;
 }
 </style>

@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vee-validate/yup": "^4.12.5",
+    "maska": "^2.1.11",
+    "vee-validate": "^4.12.5",
     "vue": "^3.4.15"
   },
   "devDependencies": {
