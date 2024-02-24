@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { vMaska } from 'maska';
 import * as yup from 'yup';
 import { Form, Field, ErrorMessage } from 'vee-validate';
@@ -26,12 +26,6 @@ const form = ref({
 const showForm = ref(false);
 
 const message = ref('');
-
-const isFormValid = computed(() => {
-  return (
-    form.value.name && form.value.phone && form.value.email && form.value.file && form.value.consent
-  );
-});
 
 // обработчик добавления файла
 
@@ -75,12 +69,6 @@ function submitForm() {
   };
   message.value = 'Отзыв записан в консоль';
   setTimeout(() => (message.value = ''), 3000);
-}
-
-// проверка ошибок во всех полях
-
-function hasErrors(errors) {
-  return Object.keys(errors).length > 0;
 }
 </script>
 
@@ -151,13 +139,7 @@ function hasErrors(errors) {
           </div>
           <span class="error-span"><ErrorMessage name="consent" class="error" /></span>
 
-          <button
-            class="button"
-            type="submit"
-            :disabled="!isFormValid || hasErrors(errors)"
-            :class="{ disabled: !isFormValid || hasErrors(errors) }">
-            Отправить
-          </button>
+          <button class="button" type="submit">Отправить</button>
         </Form>
       </div>
     </div>
@@ -180,10 +162,6 @@ function hasErrors(errors) {
   cursor: pointer;
   font-size: large;
   width: 200px;
-}
-
-.button.disabled {
-  pointer-events: none;
 }
 
 .button:hover {
